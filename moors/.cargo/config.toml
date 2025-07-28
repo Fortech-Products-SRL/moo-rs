@@ -1,0 +1,7 @@
+[registries.aiperion-moors]
+index = "sparse+https://cargo.cloudsmith.io/aiperion/moors/"
+token = "Token Gu69xhvwbl00MD54"
+credential-provider = "cargo:token"
+
+[registry]
+default = "aiperion-moors"

@@ -5,7 +5,7 @@ edition = "2024"
 authors = ["Andrés Sandoval Abarca <andres.sndbrca@gmail.com>"]
 description = "Solving multi-objective optimization problems using genetic algorithms."
 license = "MIT"
-repository = "https://github.com/andresliszt/moo-rs"
+repository = "https://github.com/Fortech-Products-SRL/moo-rs"
 
 [lib]
 name = "moors"
