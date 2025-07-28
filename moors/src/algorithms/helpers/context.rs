@@ -13,7 +13,6 @@ pub struct AlgorithmContext {
     pub current_iteration: usize,
     pub upper_bound: Option<f64>,
     pub lower_bound: Option<f64>,
-    pub context_id: usize,
 }
 
 impl AlgorithmContext {

@@ -100,8 +100,6 @@ pub struct GeneticAlgorithmParams<
     verbose: bool,
     #[builder(setter(strip_option), default = "None")]
     seed: Option<u64>,
-    #[builder(default = "0")]
-    context_id: usize,
 }
 
 impl<S, Sel, Sur, Cross, Mut, F, G, DC> AlgorithmBuilder<S, Sel, Sur, Cross, Mut, F, G, DC>
@@ -165,7 +163,6 @@ where
             .num_iterations(params.num_iterations)
             .lower_bound(lb)
             .upper_bound(ub)
-            .context_id(params.context_id)
             .build()
             .expect("Params already validated in build_params");
 
@@ -252,9 +249,7 @@ where
         let combined_genes = concatenate(Axis(0), &[ref_pop.genes.view(), offspring_genes.view()])
             .expect("Failed to concatenate current population genes with offspring genes");
         // Evaluate the fitness and constraints and create Population
-        let evaluated_population = self
-            .evaluator
-            .evaluate(combined_genes, self.context.context_id)?;
+        let evaluated_population = self.evaluator.evaluate(combined_genes)?;
 
         // Select survivors to the next iteration population
         let survivors = self.survivor.operate(

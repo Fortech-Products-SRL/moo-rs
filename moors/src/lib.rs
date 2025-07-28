@@ -41,7 +41,7 @@
 //! const CAPACITY: f64 = 15.0;
 //!
 //! /// Multi‑objective fitness ⇒ [−total_value, total_weight]
-//! fn fitness(pop_genes: &Array2<f64>, _context_id: usize) -> Array2<f64> {
+//! fn fitness(pop_genes: &Array2<f64>) -> Array2<f64> {
 //!     let w = Array1::from_vec(WEIGHTS.into());
 //!     let v = Array1::from_vec(VALUES.into());
 //!     let total_v = pop_genes.dot(&v);
@@ -50,7 +50,7 @@
 //! }
 //!
 //! /// Single inequality constraint ⇒ total_weight − CAPACITY ≤ 0
-//! fn constraints(pop_genes: &Array2<f64>, _context_id: usize) -> Array1<f64> {
+//! fn constraints(pop_genes: &Array2<f64>) -> Array1<f64> {
 //!     let w = Array1::from_vec(WEIGHTS.into());
 //!     pop_genes.dot(&w) - CAPACITY
 //! }

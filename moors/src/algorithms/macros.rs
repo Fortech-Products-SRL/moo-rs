@@ -129,7 +129,6 @@ macro_rules! create_algorithm {
                 pub fn keep_infeasible(mut self, v: bool) -> Self { self.inner_builder = self.inner_builder.keep_infeasible(v); self }
                 pub fn verbose(mut self, v: bool) -> Self { self.inner_builder = self.inner_builder.verbose(v); self }
                 pub fn seed(mut self, v: u64) -> Self { self.inner_builder = self.inner_builder.seed(v); self }
-                pub fn context_id(mut self, v: usize) -> Self { self.inner_builder = self.inner_builder.context_id(v); self }
 
                 pub fn build(self) -> Result<$algorithm<S, Cross, Mut, F, G, DC>, AlgorithmBuilderError> {
                     Ok($algorithm {

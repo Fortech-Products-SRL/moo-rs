@@ -14,7 +14,7 @@ use moors::{
 /// f1(x) = x₀
 /// g(x)  = 1 + 9/(n−1) * Σᵢ₌₁ⁿ⁻₁ xᵢ
 /// f2(x) = g(x) * (1 − sqrt(f1(x) / g(x)))
-fn zdt1(pop_genes: &Array2<f64>, _context_id: usize) -> Array2<f64> {
+fn zdt1(pop_genes: &Array2<f64>) -> Array2<f64> {
     let n = pop_genes.ncols();
     let f1 = pop_genes.column(0).to_owned();
     let sum_rest = pop_genes.sum_axis(Axis(1)) - &f1;
