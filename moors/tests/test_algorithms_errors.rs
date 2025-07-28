@@ -85,9 +85,7 @@ fn test_no_feasible_in_evaluation() {
     let constraints_fn = move |genes: &Array2<f64>| -> Array2<f64> {
         let idx = counter.get();
         counter.set(idx + 1);
-
         let base = dummy_constraints(genes);
-
         if idx == 0 { base } else { -base }
     };
 

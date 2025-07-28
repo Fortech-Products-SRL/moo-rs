@@ -3,6 +3,7 @@ mod float;
 mod int;
 
 pub use binary::RandomSamplingBinary;
+pub use float::PerGeneSampling;
 pub use float::RandomSamplingFloat;
 pub use int::RandomSamplingInt;
 

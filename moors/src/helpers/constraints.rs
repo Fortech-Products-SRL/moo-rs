@@ -178,7 +178,6 @@ mod tests {
         let genes = array![[0.0, 0.0], [1.0, 1.0]]; // 2 × 2
         impl_constraints_fn!(MyConstr, ineq = [g1, g2]); // closure (genes) -> Array2
         let res = MyConstr.call(&genes); // 2 × 2
-
         let expect = array![[-1.0, -1.0], [1.0, 1.0]];
         assert_eq!(res.shape(), &[2, 2]);
         assert_eq!(res, expect);
@@ -214,13 +213,11 @@ mod tests {
         let genes = array![[2.0, 2.0], [0.5, 1.5]]; // 2 × 2
         impl_constraints_fn!(EqOnly, eq = [g3]);
         let res = EqOnly.call(&genes); // 2 × 1
-
         const EPS: f64 = 1e-6;
         // |g3| - ε = |x - y| - ε
         let mut exp = Array2::<f64>::zeros((2, 1));
         exp[[0, 0]] = -EPS; // |2–2|−ε = 0−ε
         exp[[1, 0]] = 1.0 - EPS; // |0.5–1.5|−ε = 1−ε
-
         assert_eq!(res, exp);
     }
 
@@ -229,7 +226,6 @@ mod tests {
         let genes = array![[1.0, 3.0], [0.0, 2.0]];
         impl_constraints_fn!(LowOnly, lower_bound = 2.0);
         let res = LowOnly.call(&genes); // 2 × 2
-
         // lower_bound - genes = 2 - genes
         let mut exp = Array2::<f64>::zeros((2, 2));
         exp[[0, 0]] = 2.0 - 1.0;
@@ -244,7 +240,6 @@ mod tests {
         let genes = array![[1.0, 3.0], [0.0, 2.0]];
         impl_constraints_fn!(UpOnly, upper_bound = 3.0);
         let res = UpOnly.call(&genes); // 2 × 2
-
         // genes - upper_bound = genes - 3
         let mut exp = Array2::<f64>::zeros((2, 2));
         exp[[0, 0]] = 1.0 - 3.0;

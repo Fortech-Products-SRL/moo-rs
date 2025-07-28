@@ -74,18 +74,18 @@ pub mod selection;
 pub mod survival;
 
 pub use crossover::{
-    ArithmeticCrossover, CrossoverOperator, ExponentialCrossover, OrderCrossover,
+    ArithmeticCrossover, CrossoverOperator, ExponentialCrossover, OrderCrossover, SBXCrossover,
     SimulatedBinaryCrossover, SinglePointBinaryCrossover, TwoPointBinaryCrossover,
     UniformBinaryCrossover,
 };
 pub use evolve::{Evolve, EvolveBuilder, EvolveError};
 pub use mutation::{
     BitFlipMutation, DisplacementMutation, GaussianMutation, InversionMutation, MutationOperator,
-    ScrambleMutation, SwapMutation, UniformBinaryMutation, UniformRealMutation,
+    PolynomialMutation, ScrambleMutation, SwapMutation, UniformBinaryMutation, UniformRealMutation,
 };
 pub use sampling::{
-    PermutationSampling, RandomSamplingBinary, RandomSamplingFloat, RandomSamplingInt,
-    SamplingOperator,
+    PerGeneSampling, PermutationSampling, RandomSamplingBinary, RandomSamplingFloat,
+    RandomSamplingInt, SamplingOperator,
 };
 pub use selection::{
     SelectionOperator,
@@ -98,8 +98,8 @@ pub use survival::{
     SurvivalOperator,
     moo::{
         AgeMoeaSurvival, DanAndDenisReferencePoints, FrontsAndRankingBasedSurvival,
-        Nsga2RankCrowdingSurvival, Nsga3ReferencePoints, Nsga3ReferencePointsSurvival,
-        ReveaReferencePointsSurvival, Rnsga2ReferencePointsSurvival, Spea2KnnSurvival,
-        StructuredReferencePoints,
+        NormalBoundaryDivisions, Nsga2RankCrowdingSurvival, Nsga3ReferencePoints,
+        Nsga3ReferencePointsSurvival, ReveaReferencePointsSurvival, Rnsga2ReferencePointsSurvival,
+        Spea2KnnSurvival, StructuredReferencePoints,
     },
 };

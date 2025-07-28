@@ -8,12 +8,47 @@ pub struct DanAndDenisReferencePoints {
     num_objectives: usize,
 }
 
+pub struct NormalBoundaryDivisions {
+    pub outer_divisions: usize,
+    pub inner_divisions: usize,
+}
+
+impl NormalBoundaryDivisions {
+    pub fn new(outer_divisions: usize, inner_divisions: usize) -> Self {
+        Self {
+            outer_divisions,
+            inner_divisions,
+        }
+    }
+
+    /// Pick the *default* boundary divisions for a given number of objectives
+    pub fn for_num_objectives(num_obj: usize) -> Self {
+        match num_obj {
+            1 => Self::new(100, 0),
+            2 => Self::new(99, 0),
+            3 => Self::new(12, 0),
+            4 => Self::new(8, 0),
+            5 => Self::new(6, 0),
+            6 => Self::new(4, 1),
+            7..=10 => Self::new(3, 2),
+            _ => Self::new(2, 1),
+        }
+    }
+}
+
 impl DanAndDenisReferencePoints {
     pub fn new(n_reference_points: usize, num_objectives: usize) -> Self {
         Self {
             n_reference_points,
             num_objectives,
         }
+    }
+
+    pub fn from_divisions(divisions: usize, num_objectives: usize) -> Self {
+        // Compute exactly how many points that will yield:
+        //   C(divisions + m - 1, m - 1)
+        let n_points = binomial_coefficient(divisions + num_objectives - 1, num_objectives - 1);
+        DanAndDenisReferencePoints::new(n_points, num_objectives)
     }
 }
 
@@ -23,7 +58,7 @@ impl StructuredReferencePoints for DanAndDenisReferencePoints {
     /// The procedure is:
     /// 1. Estimate H using `choose_h(population_size, m)`.
     /// 2. Generate all combinations of nonnegative integers (h₁, h₂, …, hₘ) that satisfy:
-    ///      h₁ + h₂ + ... + hₘ = H.
+    ///    h₁ + h₂ + ... + hₘ = H.
     /// 3. Normalize each combination by dividing each component by H to get a point on the simplex.
     ///
     /// The function returns an Array2<f64> where each row is a reference point.
@@ -96,5 +131,35 @@ fn generate_combinations(
         current.push(x);
         generate_combinations(num_objectives, sum - x, index + 1, current, points);
         current.pop();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::StructuredReferencePoints;
+    use crate::survival::moo::reference_points::dan_and_dennis::{
+        DanAndDenisReferencePoints, NormalBoundaryDivisions,
+    };
+    use ndarray::Axis;
+
+    #[test]
+    fn test_dan_and_dennis() {
+        let num_obj = 4;
+        let divs = NormalBoundaryDivisions::for_num_objectives(num_obj);
+        assert_eq!(divs.outer_divisions, 8);
+        assert_eq!(divs.inner_divisions, 0);
+
+        let mut ref_dirs =
+            DanAndDenisReferencePoints::from_divisions(divs.outer_divisions, num_obj).generate();
+        // inner layer at H = inner_divisions
+        if divs.inner_divisions > 0 {
+            let inner = DanAndDenisReferencePoints::from_divisions(divs.inner_divisions, num_obj)
+                .generate();
+            ref_dirs
+                .append(Axis(0), inner.view())
+                .expect("shapes must be compatible");
+        }
+
+        println!("Ref dirs: {:#?}", ref_dirs);
     }
 }

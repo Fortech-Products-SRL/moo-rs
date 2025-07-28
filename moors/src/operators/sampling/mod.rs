@@ -6,7 +6,7 @@ mod permutation;
 mod random;
 
 pub use permutation::PermutationSampling;
-pub use random::{RandomSamplingBinary, RandomSamplingFloat, RandomSamplingInt};
+pub use random::{PerGeneSampling, RandomSamplingBinary, RandomSamplingFloat, RandomSamplingInt};
 
 pub trait SamplingOperator {
     /// Samples a single individual.
@@ -40,9 +40,7 @@ pub trait SamplingOperator {
         let shape = (population_size, num_genes);
 
         // Use from_shape_vec to create PopulationGenes
-        let population_genes = Array2::<f64>::from_shape_vec(shape, flat_population)
-            .expect("Failed to create PopulationGenes from vector");
-
-        population_genes
+        Array2::<f64>::from_shape_vec(shape, flat_population)
+            .expect("Failed to create PopulationGenes from vector")
     }
 }

@@ -142,6 +142,7 @@ where
         Ok(())
     }
 
+    #[allow(clippy::type_complexity)]
     pub fn build(
         self,
     ) -> Result<GeneticAlgorithm<S, Sel, Sur, Cross, Mut, F, G, DC>, AlgorithmBuilderError> {
@@ -183,11 +184,11 @@ where
             population: None,
             sampler: params.sampler,
             survivor: params.survivor,
-            evolve: evolve,
-            evaluator: evaluator,
-            context: context,
+            evolve,
+            evaluator,
+            context,
             verbose: params.verbose,
-            rng: rng,
+            rng,
             phantom: PhantomData,
         })
     }
@@ -227,7 +228,7 @@ where
     G: ConstraintsFn,
     DC: PopulationCleaner,
 {
-    pub fn next(&mut self) -> Result<(), AlgorithmError> {
+    pub fn next_pop(&mut self) -> Result<(), AlgorithmError> {
         let ref_pop = self.population.as_ref().unwrap();
         // Obtain offspring genes.
         let offspring_genes = self
@@ -262,12 +263,31 @@ where
         Ok(())
     }
 
+    pub fn initialize(&mut self) -> Result<(), AlgorithmError> {
+        // Create the first Population
+        let initial_population = Initialization::initialize(
+            &self.sampler,
+            &mut self.survivor,
+            &mut self.evaluator,
+            &self.evolve.duplicates_cleaner,
+            &mut self.rng,
+            &self.context,
+        )?;
+        // Update population attribute
+        self.population = Some(initial_population);
+        Ok(())
+    }
+
+    pub fn set_current_iteration(&mut self, current_iter: usize) {
+        self.context.set_current_iteration(current_iter);
+    }
+
     pub fn run(&mut self) -> Result<(), AlgorithmError> {
         // Create the first Population
         let initial_population = Initialization::initialize(
             &self.sampler,
             &mut self.survivor,
-            &self.evaluator,
+            &mut self.evaluator,
             &self.evolve.duplicates_cleaner,
             &mut self.rng,
             &self.context,
@@ -276,7 +296,7 @@ where
         self.population = Some(initial_population);
 
         for current_iter in 0..self.context.num_iterations {
-            match self.next() {
+            match self.next_pop() {
                 Ok(()) => {
                     if self.verbose {
                         algorithm_printer(
@@ -286,7 +306,7 @@ where
                     }
                 }
                 Err(AlgorithmError::Evolve(err @ EvolveError::EmptyMatingResult)) => {
-                    println!("Warning: {}. Terminating the algorithm early.", err);
+                    println!("Warning: {err}. Terminating the algorithm early.");
                     break;
                 }
                 Err(e) => return Err(e),

@@ -1,12 +1,12 @@
 #[macro_export]
 macro_rules! create_algorithm {
     ($(#[$meta:meta])* $algorithm:ident, $selector:ty, $survivor:ty) => {
-        use crate::{
-            algorithms::{GeneticAlgorithm, AlgorithmBuilder, AlgorithmBuilderError, AlgorithmError},
+        use $crate::{
+            algorithms::{AlgorithmBuilder, AlgorithmBuilderError, AlgorithmError, GeneticAlgorithm},
             duplicates::PopulationCleaner,
             evaluator::{ConstraintsFn, FitnessFn},
             operators::{
-                SelectionOperator, SurvivalOperator, CrossoverOperator, MutationOperator, SamplingOperator,
+                CrossoverOperator, MutationOperator, SamplingOperator, SelectionOperator, SurvivalOperator,
             },
         };
 
@@ -50,14 +50,26 @@ macro_rules! create_algorithm {
                 self.inner.run()
             }
 
+            pub fn next_pop(&mut self) -> Result<(), AlgorithmError> {
+                self.inner.next_pop()
+            }
+
+            pub fn initialize(&mut self) -> Result<(), AlgorithmError> {
+                self.inner.initialize()
+            }
+
+            pub fn set_current_iteration(&mut self, current_iter: usize) {
+                self.inner.set_current_iteration(current_iter);
+            }
+
             /// Delegate `population` to the inner algorithm
             pub fn population(
                 &self,
-            ) -> Result<&crate::genetic::Population<F::Dim, G::Dim>, crate::algorithms::AlgorithmError> {
+            ) -> Result<&$crate::genetic::Population<F::Dim, G::Dim>, $crate::algorithms::AlgorithmError> {
                 match &self.inner.population {
                     Some(v) => Ok(v),
-                    None => Err(crate::algorithms::AlgorithmError::Initialization(
-                        crate::algorithms::InitializationError::NotInitializated(
+                    None => Err($crate::algorithms::AlgorithmError::Initialization(
+                        $crate::algorithms::InitializationError::NotInitializated(
                             "population is not set".into(),
                         ),
                     )),

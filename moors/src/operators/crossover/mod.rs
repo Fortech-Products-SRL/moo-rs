@@ -2,18 +2,20 @@ use ndarray::{Array1, Array2};
 
 use crate::random::RandomGenerator;
 
-mod arithmetic;
-mod exponential;
-mod order;
-mod sbx;
-mod single_point;
-mod two_points;
-mod uniform;
+pub mod arithmetic;
+pub mod exponential;
+pub mod order;
+pub mod sbx;
+pub mod sbx2;
+pub mod single_point;
+pub mod two_points;
+pub mod uniform;
 
 pub use arithmetic::ArithmeticCrossover;
 pub use exponential::ExponentialCrossover;
 pub use order::OrderCrossover;
 pub use sbx::SimulatedBinaryCrossover;
+pub use sbx2::SBXCrossover;
 pub use single_point::SinglePointBinaryCrossover;
 pub use two_points::TwoPointBinaryCrossover;
 pub use uniform::UniformBinaryCrossover;
@@ -63,7 +65,7 @@ pub trait CrossoverOperator {
             let parent_a = parents_a.row(i).to_owned();
             let parent_b = parents_b.row(i).to_owned();
 
-            if rng.gen_proability() <= crossover_rate {
+            if rng.gen_probability() <= crossover_rate {
                 // Perform crossover
                 let (child_a, child_b) = self.crossover(&parent_a, &parent_b, rng);
                 flat_offspring.extend(child_a.into_iter());
@@ -76,14 +78,13 @@ pub trait CrossoverOperator {
         }
 
         // Create PopulationGenes directly from the flat vectors
-        let offspring_population = Array2::<f64>::from_shape_vec(
+        Array2::<f64>::from_shape_vec(
             (
                 self.n_offsprings_per_crossover() * population_size,
                 num_genes,
             ),
             flat_offspring,
         )
-        .expect("Failed to create offspring population");
-        offspring_population
+        .expect("Failed to create offspring population")
     }
 }

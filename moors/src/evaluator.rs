@@ -33,7 +33,7 @@ where
 {
     type Dim = Dim;
     fn call(&self, genes: &Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Dim> {
-        (self)(genes)
+        self(genes)
     }
 }
 
@@ -57,18 +57,18 @@ where
     <Self::Dim as Dimension>::Smaller: D01,
 {
     type Dim: D12;
-    fn call(&self, genes: &Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Self::Dim>;
+    fn call(&mut self, genes: &Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Self::Dim>;
 }
 
 impl<F, Dim> FitnessFn for F
 where
-    F: Fn(&Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Dim>,
+    F: FnMut(&Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Dim>,
     Dim: D12,
     <Dim as Dimension>::Smaller: D01,
 {
     type Dim = Dim;
-    fn call(&self, genes: &Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Dim> {
-        (self)(genes)
+    fn call(&mut self, genes: &Array2<f64>) -> ArrayBase<OwnedRepr<f64>, Dim> {
+        self(genes)
     }
 }
 
@@ -105,7 +105,7 @@ where
     ///   - The provided constraints function (all constraint values must be ≤ 0), and
     ///   - The optional lower and upper bounds (each gene must satisfy lower_bound <= gene <= upper_bound).
     pub fn evaluate(
-        &self,
+        &mut self,
         genes: Array2<f64>,
     ) -> Result<Population<F::Dim, G::Dim>, EvaluatorError> {
         let fitness = self.fitness.call(&genes);
@@ -118,7 +118,7 @@ where
             let mut feasible_indices: Vec<usize> = (0..n).collect();
 
             // Filter individuals that do not satisfy the constraints function (if provided).
-            if evaluated_population.constraints.len() > 0 {
+            if !evaluated_population.constraints.is_empty() {
                 feasible_indices.retain(|&i| {
                     evaluated_population
                         .constraints
@@ -196,7 +196,7 @@ mod tests {
 
     #[test]
     fn two_d_fitness_without_constraints_keeps_every_row() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_2d_single)
             .constraints(NoConstraints)
             .keep_infeasible(true)
@@ -217,7 +217,7 @@ mod tests {
 
     #[test]
     fn multi_constraints_are_computed_correctly() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_2d_single)
             .constraints(constraints_multi)
             .build()
@@ -237,7 +237,7 @@ mod tests {
 
     #[test]
     fn keep_infeasible_true_retains_every_row() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_2d_single)
             .constraints(constraints_multi)
             .keep_infeasible(true)
@@ -259,7 +259,7 @@ mod tests {
 
     #[test]
     fn one_d_fitness_multi_constraints_filters_by_constraint_only() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_1d)
             .constraints(constraints_multi)
             .keep_infeasible(false)
@@ -282,7 +282,7 @@ mod tests {
 
     #[test]
     fn one_d_fitness_single_constraint_filters_correctly() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_1d)
             .constraints(constraints_single)
             .keep_infeasible(false)
@@ -310,7 +310,7 @@ mod tests {
 
     #[test]
     fn all_rows_removed_returns_no_feasible_error() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_1d)
             .constraints(constraints_multi)
             .keep_infeasible(false)
@@ -332,7 +332,7 @@ mod tests {
 
     #[test]
     fn two_objective_fitness_is_computed_for_each_row() {
-        let eval = EvaluatorBuilder::default()
+        let mut eval = EvaluatorBuilder::default()
             .fitness(fitness_2d_two_obj)
             .constraints(NoConstraints)
             .build()

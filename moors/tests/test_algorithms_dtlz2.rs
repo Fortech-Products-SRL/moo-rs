@@ -1,6 +1,7 @@
 use ndarray::{Array2, Axis, stack};
 
 use moors::{
+    DanAndDenisReferencePoints,
     algorithms::{Nsga3Builder, ReveaBuilder},
     duplicates::CloseDuplicatesCleaner,
     genetic::PopulationMOO,
@@ -9,8 +10,8 @@ use moors::{
         ArithmeticCrossover, GaussianMutation, RandomSamplingFloat, SimulatedBinaryCrossover,
         UniformRealMutation,
         survival::moo::{
-            DanAndDenisReferencePoints, Nsga3ReferencePoints, Nsga3ReferencePointsSurvival,
-            ReveaReferencePointsSurvival, StructuredReferencePoints,
+            Nsga3ReferencePoints, Nsga3ReferencePointsSurvival, ReveaReferencePointsSurvival,
+            StructuredReferencePoints,
         },
     },
 };
@@ -76,7 +77,7 @@ fn test_nsga3_dtlz2_three_objectives() {
         .duplicates_cleaner(CloseDuplicatesCleaner::new(1e-6))
         .fitness_fn(fitness_dtlz2_3obj)
         .constraints_fn(MyConstr)
-        .num_vars(2)
+        .num_vars(5)
         .population_size(100)
         .num_offsprings(100)
         .num_iterations(200)

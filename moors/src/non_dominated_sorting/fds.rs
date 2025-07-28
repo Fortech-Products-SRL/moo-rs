@@ -56,11 +56,13 @@ pub fn fast_non_dominated_sorting(
     // Build the first front
     let mut fronts = Vec::new();
     let mut first_front = Vec::new();
-    for i in 0..population_size {
-        if domination_count[i] == 0 {
+
+    for (i, item) in domination_count.iter().enumerate().take(population_size) {
+        if *item == 0 {
             first_front.push(i);
         }
     }
+
     fronts.push(first_front.clone());
     let mut count = first_front.len();
     // If the first front already reaches min_survivors, return immediately.
@@ -110,7 +112,7 @@ where
     let mut results: Fronts<ConstrDim> = Vec::new();
     // For each front (with rank = front_index), extract the sub-population.
     for (front_index, indices) in sorted_fronts.iter().enumerate() {
-        let mut population_front = population.selected(&indices);
+        let mut population_front = population.selected(indices);
         let rank_arr = Array1::from_elem(indices.len(), front_index);
         population_front.set_rank(rank_arr);
         results.push(population_front);
